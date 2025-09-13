@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AWS Cloud Fundamentals</title>
+    <style>
+        :root {
+            --aws-orange: #FF9900;
+            --aws-dark: #232F3E;
+            --aws-light: #FAFAFA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Amazon Ember', 'Segoe UI', Tahoma, sans-serif;
+            background: var(--aws-light);
+            color: var(--aws-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--aws-dark);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            border-bottom: 4px solid var(--aws-orange);
+        }
+
+        .aws-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--aws-orange);
+            margin-bottom: 10px;
+        }
+
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: var(--aws-orange);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--aws-orange);
+        }
+
+        .lesson {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .lesson.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border: 2px dashed var(--aws-orange);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .sandbox {
+            background: var(--aws-dark);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .sandbox pre {
+            font-family: 'Courier New', monospace;
+            background: #2d3748;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .quiz-option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--aws-orange);
+        }
+
+        .quiz-option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .quiz-option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .btn {
+            background: var(--aws-orange);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            background: #e88a00;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--aws-orange);
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .service-demo {
+            position: relative;
+            min-height: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .resource-manager {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .resource {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid var(--aws-orange);
+            cursor: move;
+            margin: 10px;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .resource:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: #fff8e6;
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+        }
+
+        .cost-calculator {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            color: var(--aws-orange);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .lesson {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="aws-logo">AWS Cloud Fundamentals</div>
+        <p>Interactive Learning Journey</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Lesson 1: AWS Fundamentals -->
+        <div class="lesson active" data-lesson="1">
+            <h2>🚀 AWS Core Concepts</h2>
+            
+            <div class="info-box">
+                <h3>AWS Global Infrastructure</h3>
+                <p>AWS operates in multiple geographical regions worldwide. Each region contains multiple Availability Zones (AZs).</p>
+            </div>
+
+            <div class="interactive-demo">
+                <h3>🌍 Interactive Region Explorer</h3>
+                <div id="regionMap" class="service-demo">
+                    <div class="resource-manager" id="regionResources">
+                        <div class="resource" draggable="true" data-region="us-east-1">US East (N. Virginia)</div>
+                        <div class="resource" draggable="true" data-region="us-west-2">US West (Oregon)</div>
+                        <div class="resource" draggable="true" data-region="eu-west-1">EU West (Ireland)</div>
+                        <div class="resource" draggable="true" data-region="ap-southeast-1">Asia Pacific (Singapore)</div>
+                        <div class="resource" draggable="true" data-region="ap-northeast-1">Asia Pacific (Tokyo)</div>
+                    </div>
+                    <div class="drop-zone" id="selectedRegion">
+                        Drag a region here to explore
+                    </div>
+                </div>
+            </div>
+
+            <div class="sandbox">
+                <h3>💻 AWS CLI Simulator</h3>
+                <pre id="cliOutput">$ aws configure
+AWS Access Key ID [None]: ****************
+AWS Secret Access Key [None]: ****************
+Default region name [None]: us-east-1
+Default output format [None]: json</pre>
+                <input type="text" id="cliInput" placeholder="Type AWS CLI commands..." style="width: 100%; padding: 10px; margin-top: 10px;">
+            </div>
+
+            <div class="quiz-container">
+                <h3>Quick Knowledge Check</h3>
+                <div class="quiz-option" onclick="checkAnswer(this, true)">An AWS Region consists of multiple Availability Zones</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">All AWS services are available in every region</div>
+                <div class="quiz-option" onclick="checkAnswer(this, true)">AWS provides a shared responsibility model for security</div>
+            </div>
+        </div>
+
+        <!-- Lesson 2: Compute Services -->
+        <div class="lesson" data-lesson="2">
+            <h2>💻 AWS Compute Services</h2>
+
+            <div class="service-grid" id="computeServices">
+                <div class="service-card" onclick="exploreService('ec2')">
+                    <h3>EC2 (Elastic Compute Cloud)</h3>
+                    <p>Virtual servers in the cloud</p>
+                </div>
+                <div class="service-card" onclick="exploreService('lambda')">
+                    <h3>Lambda</h3>
+                    <p>Serverless compute service</p>
+                </div>
+                <div class="service-card" onclick="exploreService('ecs')">
+                    <h3>ECS (Elastic Container Service)</h3>
+                    <p>Container orchestration service</p>
+                </div>
+            </div>
+
+            <div class="interactive-demo">
+                <h3>🖥️ EC2 Instance Builder</h3>
+                <div class="resource-manager">
+                    <div class="cost-calculator">
+                        <h4>Instance Configuration</h4>
+                        <select id="instanceType" onchange="calculateCost()">
+                            <option value="t2.micro">t2.micro (1 vCPU, 1 GB RAM)</option>
+                            <option value="t2.small">t2.small (1 vCPU, 2 GB RAM)</option>
+                            <option value="t2.medium">t2.medium (2 vCPU, 4 GB RAM)</option>
+                        </select>
+                        <select id="os" onchange="calculateCost()">
+                            <option value="linux">Amazon Linux</option>
+                            <option value="windows">Windows Server</option>
+                        </select>
+                        <div class="metric">
+                            <div class="metric-value" id="costEstimate">$0.00</div>
+                            <div>per hour</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 3: Storage Services -->
+        <div class="lesson" data-lesson="3">
+            <h2>💾 AWS Storage Solutions</h2>
+
+            <div class="service-grid">
+                <div class="service-card" onclick="exploreStorage('s3')">
+                    <h3>S3 (Simple Storage Service)</h3>
+                    <p>Object storage service</p>
+                </div>
+                <div class="service-card" onclick="exploreStorage('ebs')">
+                    <h3>EBS (Elastic Block Store)</h3>
+                    <p>Block storage for EC2</p>
+                </div>
+                <div class="service-card" onclick="exploreStorage('efs')">
+                    <h3>EFS (Elastic File System)</h3>
+                    <p>Managed file storage</p>
+                </div>
+            </div>
+
+            <div class="interactive-demo">
+                <h3>📁 Storage Calculator</h3>
+                <div id="storageCalculator">
+                    <input type="number" id="storageSize" onchange="calculateStorage()" placeholder="Enter storage size in GB">
+                    <select id="storageType" onchange="calculateStorage()">
+                        <option value="s3">S3 Standard</option>
+                        <option value="s3ia">S3 Infrequent Access</option>
+                        <option value="glacier">S3 Glacier</option>
+                    </select>
+                    <div class="metric">
+                        <div class="metric-value" id="storageCost">$0.00</div>
+                        <div>per month</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 4: Networking -->
+        <div class="lesson" data-lesson="4">
+            <h2>🌐 AWS Networking</h2>
+
+            <div class="interactive-demo">
+                <h3>VPC Builder</h3>
+                <div id="vpcBuilder" class="service-demo">
+                    <div class="vpc-config">
+                        <div class="config-section">
+                            <h4>VPC Configuration</h4>
+                            <input type="text" id="vpcName" placeholder="VPC Name" value="MyVPC">
+                            <input type="text" id="vpcCidr" placeholder="CIDR Block" value="10.0.0.0/16">
+                        </div>
+                        
+                        <div class="config-section">
+                            <h4>Subnets</h4>
+                            <div id="subnets">
+                                <div class="subnet-config">
+                                    <select class="subnet-type">
+                                        <option value="public">Public Subnet</option>
+                                        <option value="private">Private Subnet</option>
+                                    </select>
+                                    <input type="text" class="subnet-cidr" placeholder="Subnet CIDR" value="10.0.1.0/24">
+                                    <select class="subnet-az">
+                                        <option value="a">Availability Zone A</option>
+                                        <option value="b">Availability Zone B</option>
+                                        <option value="c">Availability Zone C</option>
+                                    </select>
+                                    <button class="btn-small" onclick="removeSubnet(this)">Remove</button>
+                                </div>
+                            </div>
+                            <button class="btn" onclick="addSubnet()">Add Subnet</button>
+                        </div>
+
+                        <div class="config-section">
+                            <h4>Components</h4>
+                            <div class="vpc-components">
+                                <label>
+                                    <input type="checkbox" id="igw" checked> Internet Gateway
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="natgw"> NAT Gateway
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="routeTables" checked> Route Tables
+                                </label>
+                            </div>
+                        </div>
+
+                        <button class="btn" onclick="generateVPC()">Generate VPC</button>
+                    </div>
+                    
+                    <div id="vpcDiagram" class="vpc-diagram">
+                        <div class="diagram-placeholder">VPC diagram will appear here</div>
+                    </div>
+                </div>
+
+                <div id="vpcOutput" class="code-output" style="display: none;">
+                    <h4>AWS CLI Commands</h4>
+                    <pre><code id="vpcCommands"></code></pre>
+                </div>
+            </div>
+
+            <style>
+                .vpc-config {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin-bottom: 20px;
+                }
+                
+                .config-section {
+                    background: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+
+                .subnet-config {
+                    display: grid;
+                    grid-template-columns: 2fr 2fr 2fr 1fr;
+                    gap: 10px;
+                    margin: 10px 0;
+                    align-items: center;
+                }
+
+                .vpc-components {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 10px;
+                }
+
+                .vpc-diagram {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    min-height: 300px;
+                    margin-top: 20px;
+                }
+
+                .btn-small {
+                    padding: 5px 10px;
+                    background: #dc3545;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+
+                input[type="text"], select {
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    margin: 5px 0;
+                    width: 100%;
+                }
+
+                .code-output {
+                    background: var(--aws-dark);
+                    color: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-top: 20px;
+                    overflow-x: auto;
+                }
+            </style>
+
+            <div class="info-box">
+                <h3>Key Networking Concepts</h3>
+                <ul>
+                    <li>VPC (Virtual Private Cloud)</li>
+                    <li>Subnets</li>
+                    <li>Route Tables</li>
+                    <li>Internet Gateway</li>
+                    <li>Security Groups</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Lesson 5: Security & IAM -->
+        <div class="lesson" data-lesson="5">
+            <h2>🔐 Security & Identity</h2>
+
+            <div class="interactive-demo">
+                <h3>IAM Policy Generator</h3>
+                <div id="iamBuilder" class="iam-builder">
+                    <div class="policy-config">
+                        <div class="config-section">
+                            <h4>Policy Configuration</h4>
+                            <input type="text" id="policyName" placeholder="Policy Name" value="MyCustomPolicy">
+                            
+                            <div class="statement-builder">
+                                <h5>Add Statement</h5>
+                                <select id="iamService" onchange="updateActionsList()">
+                                    <option value="s3">S3</option>
+                                    <option value="ec2">EC2</option>
+                                    <option value="lambda">Lambda</option>
+                                    <option value="dynamodb">DynamoDB</option>
+                                    <option value="rds">RDS</option>
+                                </select>
+                                
+                                <div class="actions-section">
+                                    <h5>Actions</h5>
+                                    <div id="actionsCheckboxes" class="actions-list">
+                                        <!-- Will be populated by JavaScript -->
+                                    </div>
+                                </div>
+
+                                <div class="resource-section">
+                                    <h5>Resource</h5>
+                                    <input type="text" id="resourceArn" placeholder="ARN or *" value="*">
+                                </div>
+
+                                <button class="btn" onclick="addStatement()">Add Statement</button>
+                            </div>
+                        </div>
+
+                        <div class="statements-list">
+                            <h4>Current Statements</h4>
+                            <div id="currentStatements">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="policy-output">
+                        <h4>Generated Policy</h4>
+                        <pre id="policyOutput" class="code-block">
+{
+    "Version": "2012-10-17",
+    "Statement": []
+}</pre>
+                        <button class="btn" onclick="copyPolicy()">Copy Policy</button>
+                    </div>
+                </div>
+
+                <style>
+                    .iam-builder {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 20px;
+                    }
+
+                    .policy-config {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+
+                    .statement-builder {
+                        margin-top: 15px;
+                    }
+
+                    .actions-list {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 10px;
+                        margin: 10px 0;
+                        max-height: 200px;
+                        overflow-y: auto;
+                        padding: 10px;
+                        background: #f8f9fa;
+                        border-radius: 4px;
+                    }
+
+                    .action-checkbox {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                    }
+
+                    .policy-output {
+                        background: var(--aws-dark);
+                        color: white;
+                        padding: 20px;
+                        border-radius: 8px;
+                        position: relative;
+                    }
+
+                    .code-block {
+                        background: #2d3748;
+                        padding: 15px;
+                        border-radius: 4px;
+                        overflow-x: auto;
+                        margin: 10px 0;
+                    }
+
+                    .statements-list {
+                        margin-top: 20px;
+                        background: #f8f9fa;
+                        padding: 15px;
+                        border-radius: 4px;
+                        max-height: 200px;
+                        overflow-y: auto;
+                    }
+                </style>
+            </div>
+
+            <div class="quiz-container">
+                <h3>Security Best Practices Quiz</h3>
+                <!-- Quiz content will be added by JavaScript -->
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="btn" id="prevBtn" onclick="prevLesson()" disabled>Previous</button>
+            <button class="btn" id="nextBtn" onclick="nextLesson()">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentLesson = 1;
+        const totalLessons = 5;
+
+        // AWS Regions data
+        const regions = {
+            'us-east-1': { name: 'US East (N. Virginia)', azs: 6, services: ['EC2', 'S3', 'Lambda', 'RDS', 'DynamoDB'] },
+            'us-west-2': { name: 'US West (Oregon)', azs: 4, services: ['EC2', 'S3', 'Lambda', 'RDS', 'DynamoDB'] },
+            'eu-west-1': { name: 'EU West (Ireland)', azs: 3, services: ['EC2', 'S3', 'Lambda', 'RDS'] },
+            'ap-southeast-1': { name: 'Asia Pacific (Singapore)', azs: 3, services: ['EC2', 'S3', 'Lambda'] },
+            'ap-northeast-1': { name: 'Asia Pacific (Tokyo)', azs: 4, services: ['EC2', 'S3', 'Lambda', 'RDS'] }
+        };
+
+        // Initialize drag and drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const resources = document.querySelectorAll('.resource');
+            const dropZone = document.getElementById('selectedRegion');
+
+            resources.forEach(resource => {
+                resource.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.region);
+                });
+            });
+
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.background = '#f0f0f0';
+            });
+
+            dropZone.addEventListener('dragleave', function() {
+                this.style.background = '';
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.background = '';
+                const regionId = e.dataTransfer.getData('text/plain');
+                const region = regions[regionId];
+                
+                if (region) {
+                    this.innerHTML = `
+                        <h4>${region.name}</h4>
+                        <p>Availability Zones: ${region.azs}</p>
+                        <div class="info-box">
+                            <h5>Available Services:</h5>
+                            <ul>
+                                ${region.services.map(service => `<li>${service}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <button class="btn" onclick="document.getElementById('selectedRegion').innerHTML = 'Drag a region here to explore'">Reset</button>
+                    `;
+                }
+            });
+        });
+
+        // EC2 pricing (simplified)
+        const ec2Pricing = {
+            't2.micro': { linux: 0.0116, windows: 0.0172 },
+            't2.small': { linux: 0.023, windows: 0.034 },
+            't2.medium': { linux: 0.0464, windows: 0.0686 }
+        };
+
+        // Storage pricing (simplified)
+        const storagePricing = {
+            's3': 0.023,
+            's3ia': 0.0125,
+            'glacier': 0.004
+        };
+
+        function updateProgress() {
+            const progress = (currentLesson / totalLessons) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showLesson(num) {
+            document.querySelectorAll('.lesson').forEach(lesson => {
+                lesson.classList.remove('active');
+            });
+            document.querySelector(`.lesson[data-lesson="${num}"]`).classList.add('active');
+            currentLesson = num;
+            updateProgress();
+            updateNavigation();
+        }
+
+        function nextLesson() {
+            if (currentLesson < totalLessons) {
+                showLesson(currentLesson + 1);
+            }
+        }
+
+        function prevLesson() {
+            if (currentLesson > 1) {
+                showLesson(currentLesson - 1);
+            }
+        }
+
+        function updateNavigation() {
+            document.getElementById('prevBtn').disabled = currentLesson === 1;
+            document.getElementById('nextBtn').disabled = currentLesson === totalLessons;
+        }
+
+        function checkAnswer(element, isCorrect) {
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(option => option.onclick = null);
+        }
+
+        function calculateCost() {
+            const instanceType = document.getElementById('instanceType').value;
+            const os = document.getElementById('os').value;
+            const cost = ec2Pricing[instanceType][os];
+            document.getElementById('costEstimate').textContent = `$${cost.toFixed(3)}`;
+        }
+
+        function calculateStorage() {
+            const size = document.getElementById('storageSize').value || 0;
+            const type = document.getElementById('storageType').value;
+            const cost = size * storagePricing[type];
+            document.getElementById('storageCost').textContent = `$${cost.toFixed(2)}`;
+        }
+
+        function exploreService(service) {
+            const serviceInfo = {
+                'ec2': 'Launch virtual servers in minutes with various configurations',
+                'lambda': 'Run code without provisioning servers',
+                'ecs': 'Run and scale containerized applications'
+            };
+            alert(serviceInfo[service] || 'Service information coming soon!');
+        }
+
+        function exploreStorage(service) {
+            const storageInfo = {
+                's3': 'Scalable object storage with 99.999999999% durability',
+                'ebs': 'Persistent block storage volumes for EC2 instances',
+                'efs': 'Fully managed file system for EC2'
+            };
+            alert(storageInfo[service] || 'Storage information coming soon!');
+        }
+
+        // Initialize
+        // VPC Builder Functions
+        function addSubnet() {
+            const subnet = document.createElement('div');
+            subnet.className = 'subnet-config';
+            subnet.innerHTML = `
+                <select class="subnet-type">
+                    <option value="public">Public Subnet</option>
+                    <option value="private">Private Subnet</option>
+                </select>
+                <input type="text" class="subnet-cidr" placeholder="Subnet CIDR" value="10.0.1.0/24">
+                <select class="subnet-az">
+                    <option value="a">Availability Zone A</option>
+                    <option value="b">Availability Zone B</option>
+                    <option value="c">Availability Zone C</option>
+                </select>
+                <button class="btn-small" onclick="removeSubnet(this)">Remove</button>
+            `;
+            document.getElementById('subnets').appendChild(subnet);
+        }
+
+        function removeSubnet(button) {
+            button.parentElement.remove();
+        }
+
+        function generateVPC() {
+            const vpcName = document.getElementById('vpcName').value;
+            const vpcCidr = document.getElementById('vpcCidr').value;
+            const hasIgw = document.getElementById('igw').checked;
+            const hasNatGw = document.getElementById('natgw').checked;
+            
+            let commands = [
+                `aws ec2 create-vpc --cidr-block ${vpcCidr} --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=${vpcName}}]'`,
+            ];
+
+            if (hasIgw) {
+                commands.push(`aws ec2 create-internet-gateway`);
+                commands.push(`aws ec2 attach-internet-gateway --vpc-id <vpc-id> --internet-gateway-id <igw-id>`);
+            }
+
+            const subnets = document.querySelectorAll('.subnet-config');
+            subnets.forEach((subnet, index) => {
+                const type = subnet.querySelector('.subnet-type').value;
+                const cidr = subnet.querySelector('.subnet-cidr').value;
+                const az = subnet.querySelector('.subnet-az').value;
+                
+                commands.push(`aws ec2 create-subnet --vpc-id <vpc-id> --cidr-block ${cidr} --availability-zone us-east-1${az}`);
+                
+                if (type === 'public' && hasIgw) {
+                    commands.push(`aws ec2 create-route-table --vpc-id <vpc-id>`);
+                    commands.push(`aws ec2 create-route --route-table-id <rtb-id> --destination-cidr-block 0.0.0.0/0 --gateway-id <igw-id>`);
+                }
+            });
+
+            if (hasNatGw) {
+                commands.push(`aws ec2 allocate-address --domain vpc`);
+                commands.push(`aws ec2 create-nat-gateway --subnet-id <public-subnet-id> --allocation-id <eip-allocation-id>`);
+            }
+
+            document.getElementById('vpcOutput').style.display = 'block';
+            document.getElementById('vpcCommands').textContent = commands.join('\n\n');
+
+            // Generate VPC Diagram
+            generateVPCDiagram(vpcName, vpcCidr, subnets, hasIgw, hasNatGw);
+        }
+
+        function generateVPCDiagram(vpcName, vpcCidr, subnets, hasIgw, hasNatGw) {
+            const diagram = document.getElementById('vpcDiagram');
+            let html = `
+                <div style="border: 2px solid #232F3E; padding: 20px; border-radius: 8px;">
+                    <h4>${vpcName} (${vpcCidr})</h4>
+                    <div style="display: grid; grid-template-columns: repeat(${Math.ceil(subnets.length/2)}, 1fr); gap: 10px; margin-top: 15px;">
+            `;
+
+            subnets.forEach((subnet) => {
+                const type = subnet.querySelector('.subnet-type').value;
+                const cidr = subnet.querySelector('.subnet-cidr').value;
+                const az = subnet.querySelector('.subnet-az').value;
+                
+                html += `
+                    <div style="border: 1px solid #666; padding: 10px; border-radius: 4px; background: ${type === 'public' ? '#e6f3ff' : '#fff4e6'}">
+                        <div>${type.charAt(0).toUpperCase() + type.slice(1)} Subnet</div>
+                        <div style="font-size: 0.8em">CIDR: ${cidr}</div>
+                        <div style="font-size: 0.8em">AZ: ${az.toUpperCase()}</div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+
+            if (hasIgw) {
+                html += `
+                    <div style="margin-top: 15px; padding: 10px; background: #e6ffe6; border-radius: 4px;">
+                        Internet Gateway
+                    </div>
+                `;
+            }
+
+            if (hasNatGw) {
+                html += `
+                    <div style="margin-top: 15px; padding: 10px; background: #ffe6e6; border-radius: 4px;">
+                        NAT Gateway
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            diagram.innerHTML = html;
+        }
+
+        // IAM Policy Generator Functions
+        const serviceActions = {
+            's3': ['GetObject', 'PutObject', 'ListBucket', 'DeleteObject', 'CreateBucket', 'DeleteBucket'],
+            'ec2': ['DescribeInstances', 'RunInstances', 'StartInstances', 'StopInstances', 'TerminateInstances'],
+            'lambda': ['InvokeFunction', 'CreateFunction', 'DeleteFunction', 'UpdateFunctionCode', 'ListFunctions'],
+            'dynamodb': ['GetItem', 'PutItem', 'Query', 'Scan', 'DeleteItem', 'CreateTable', 'DeleteTable'],
+            'rds': ['CreateDBInstance', 'DeleteDBInstance', 'DescribeDBInstances', 'ModifyDBInstance']
+        };
+
+        function updateActionsList() {
+            const service = document.getElementById('iamService').value;
+            const actionsDiv = document.getElementById('actionsCheckboxes');
+            actionsDiv.innerHTML = serviceActions[service].map(action => `
+                <label class="action-checkbox">
+                    <input type="checkbox" value="${action}">
+                    ${action}
+                </label>
+            `).join('');
+        }
+
+        function addStatement() {
+            const service = document.getElementById('iamService').value;
+            const selectedActions = Array.from(document.querySelectorAll('#actionsCheckboxes input:checked'))
+                .map(cb => cb.value);
+            const resource = document.getElementById('resourceArn').value;
+
+            if (selectedActions.length === 0) {
+                alert('Please select at least one action');
+                return;
+            }
+
+            const statement = {
+                Effect: 'Allow',
+                Action: selectedActions.map(action => `${service}:${action}`),
+                Resource: resource
+            };
+
+            const currentPolicy = JSON.parse(document.getElementById('policyOutput').textContent);
+            currentPolicy.Statement.push(statement);
+            
+            document.getElementById('policyOutput').textContent = 
+                JSON.stringify(currentPolicy, null, 4);
+
+            // Add to current statements list
+            const statementDiv = document.createElement('div');
+            statementDiv.className = 'statement-item';
+            statementDiv.innerHTML = `
+                <div style="background: #f1f1f1; padding: 10px; margin: 5px 0; border-radius: 4px;">
+                    <strong>${service}</strong>: ${selectedActions.join(', ')}
+                    <button class="btn-small" onclick="this.parentElement.remove(); updatePolicy();">Remove</button>
+                </div>
+            `;
+            document.getElementById('currentStatements').appendChild(statementDiv);
+        }
+
+        function copyPolicy() {
+            const policyText = document.getElementById('policyOutput').textContent;
+            navigator.clipboard.writeText(policyText)
+                .then(() => alert('Policy copied to clipboard!'))
+                .catch(err => console.error('Failed to copy policy:', err));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            calculateCost();
+            calculateStorage();
+            updateActionsList(); // Initialize IAM actions list
+
+            // CLI simulator
+            const cliInput = document.getElementById('cliInput');
+            cliInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const command = this.value;
+                    const output = document.getElementById('cliOutput');
+                    output.textContent += `\n$ ${command}\nExecuting command...`;
+                    this.value = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

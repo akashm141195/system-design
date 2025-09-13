@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Azure Cloud Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0078D4, #50E6FF);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #50E6FF, #00B7C3);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .lesson {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .lesson.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson h2 {
+            color: #0078D4;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #0078D4;
+            padding-bottom: 10px;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border: 2px dashed #0078D4;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .azure-service {
+            display: inline-block;
+            background: linear-gradient(135deg, #0078D4, #00B7C3);
+            color: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .azure-service:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .azure-service.active {
+            background: linear-gradient(135deg, #50E6FF, #00B7C3);
+            transform: scale(1.05);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #E8F5FD, #D0EBFF);
+            border-left: 5px solid #0078D4;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .challenge {
+            background: linear-gradient(135deg, #E5F2FF, #CCE5FF);
+            border: 2px solid #0078D4;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0078D4, #00B7C3);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quiz {
+            background: linear-gradient(135deg, #E5F2FF, #CCE5FF);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #0078D4;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #E5F2FF;
+        }
+
+        .quiz-option.correct {
+            background: #00B7C3;
+            color: white;
+            border-color: #00B7C3;
+        }
+
+        .quiz-option.incorrect {
+            background: #FF0000;
+            color: white;
+            border-color: #FF0000;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-display {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .metric {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 150px;
+            margin: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0078D4;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .lesson {
+                padding: 20px;
+            }
+            
+            .azure-service {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>☁️ Interactive Azure Cloud Tutorial</h1>
+            <p>Learn Azure cloud services step by step</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Lesson 1: Introduction to Azure -->
+        <div class="lesson active" data-lesson="1">
+            <h2>🚀 Introduction to Azure</h2>
+            <p>Welcome to Microsoft Azure! Azure is Microsoft's cloud computing platform with over 200+ services to help you build, deploy, and manage applications.</p>
+            
+            <div class="info-box">
+                <strong>Key Azure concepts:</strong><br>
+                • Resources = Individual services (VMs, databases, etc.)<br>
+                • Resource Groups = Containers for related resources<br>
+                • Subscriptions = Billing and access management<br>
+                • Regions = Geographic locations where services are hosted
+            </div>
+
+            <div class="interactive-demo">
+                <h3>🌐 Interactive Demo: Explore Azure Services</h3>
+                <p>Click on services to learn more:</p>
+                
+                <div id="azureServices">
+                    <div class="azure-service" onclick="showServiceInfo('compute')">Compute Services</div>
+                    <div class="azure-service" onclick="showServiceInfo('storage')">Storage Solutions</div>
+                    <div class="azure-service" onclick="showServiceInfo('networking')">Networking</div>
+                    <div class="azure-service" onclick="showServiceInfo('database')">Databases</div>
+                </div>
+                
+                <div id="serviceInfo" class="info-box" style="display: none;"></div>
+            </div>
+
+            <div class="quiz">
+                <h3>Quick Quiz</h3>
+                <div class="quiz-option" onclick="selectAnswer(this, true)">Azure Resource Groups help organize related resources</div>
+                <div class="quiz-option" onclick="selectAnswer(this, false)">Azure services are only available in one region</div>
+                <div class="quiz-option" onclick="selectAnswer(this, true)">Azure supports both Windows and Linux virtual machines</div>
+            </div>
+        </div>
+
+        <!-- Lesson 2: Virtual Machines -->
+        <div class="lesson" data-lesson="2">
+            <h2>💻 Azure Virtual Machines</h2>
+            <p>Learn how to create and manage Virtual Machines (VMs) in Azure, one of the most fundamental services.</p>
+
+            <div class="interactive-demo" id="vmDemo">
+                <h3>Create Your First VM</h3>
+                <div class="resource-grid">
+                    <div class="resource-card">
+                        <h4>Operating System</h4>
+                        <select id="vmOS" onchange="updateVMCost()">
+                            <option value="windows">Windows Server</option>
+                            <option value="linux">Ubuntu Linux</option>
+                        </select>
+                    </div>
+                    <div class="resource-card">
+                        <h4>Size</h4>
+                        <select id="vmSize" onchange="updateVMCost()">
+                            <option value="small">Small (2 vCPU, 8GB RAM)</option>
+                            <option value="medium">Medium (4 vCPU, 16GB RAM)</option>
+                            <option value="large">Large (8 vCPU, 32GB RAM)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="vmCost" class="metric">
+                    <div class="metric-value">$0.00</div>
+                    <div>Estimated Cost/Hour</div>
+                </div>
+            </div>
+
+            <div class="challenge">
+                <h3>🎯 Challenge: Optimize VM Costs</h3>
+                <p>Try different combinations of OS and size to find the most cost-effective solution for a web server.</p>
+            </div>
+        </div>
+
+        <!-- Lesson 3: Storage Solutions -->
+        <div class="lesson" data-lesson="3">
+            <h2>💾 Azure Storage Solutions</h2>
+            <p>Discover Azure's various storage options and when to use each one.</p>
+
+            <div class="interactive-demo">
+                <h3>Azure Storage Explorer</h3>
+                <div class="resource-grid" id="storageOptions">
+                    <div class="resource-card">
+                        <h4>Blob Storage</h4>
+                        <select id="blobTier" onchange="updateStorageCost()">
+                            <option value="hot">Hot Tier</option>
+                            <option value="cool">Cool Tier</option>
+                            <option value="archive">Archive Tier</option>
+                        </select>
+                        <input type="number" id="blobStorage" placeholder="Storage in GB" value="100" onchange="updateStorageCost()">
+                    </div>
+                    <div class="resource-card">
+                        <h4>File Storage</h4>
+                        <select id="fileShareTier" onchange="updateStorageCost()">
+                            <option value="transaction">Transaction Optimized</option>
+                            <option value="hot">Hot</option>
+                            <option value="premium">Premium</option>
+                        </select>
+                        <input type="number" id="fileStorage" placeholder="Storage in GB" value="100" onchange="updateStorageCost()">
+                    </div>
+                    <div class="resource-card">
+                        <h4>Table Storage</h4>
+                        <input type="number" id="tableStorage" placeholder="Storage in GB" value="50" onchange="updateStorageCost()">
+                        <div class="info-text">For structured NoSQL data</div>
+                    </div>
+                    <div class="resource-card">
+                        <h4>Queue Storage</h4>
+                        <input type="number" id="queueStorage" placeholder="Storage in GB" value="10" onchange="updateStorageCost()">
+                        <div class="info-text">For message queuing</div>
+                    </div>
+                </div>
+                
+                <div class="storage-metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="totalStorageCost">$0.00</div>
+                        <div>Estimated Cost/Month</div>
+                    </div>
+                    <div class="storage-features">
+                        <div class="feature-tag" onclick="showFeatureInfo('redundancy')">Redundancy Options</div>
+                        <div class="feature-tag" onclick="showFeatureInfo('security')">Security Features</div>
+                        <div class="feature-tag" onclick="showFeatureInfo('performance')">Performance Tiers</div>
+                    </div>
+                </div>
+                
+                <div id="featureInfo" class="info-box" style="display: none;"></div>
+            </div>
+
+            <div class="storage-simulator">
+                <h3>Storage Operations Simulator</h3>
+                <div class="simulator-container">
+                    <div class="simulator-actions">
+                        <button class="btn" onclick="simulateOperation('upload')">Upload File</button>
+                        <button class="btn" onclick="simulateOperation('download')">Download File</button>
+                        <button class="btn" onclick="simulateOperation('delete')">Delete File</button>
+                    </div>
+                    <div id="simulatorOutput" class="code-block">
+                        Ready to simulate storage operations...
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz">
+                <h3>Storage Quiz</h3>
+                <div id="storageQuiz">
+                    <div class="quiz-option" onclick="selectAnswer(this, true)">Blob Storage is ideal for storing large unstructured data</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, true)">Azure Files provides SMB and NFS file shares</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">Archive tier provides the fastest access to data</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, true)">Table Storage can store structured NoSQL data</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 4: Networking -->
+        <div class="lesson" data-lesson="4">
+            <h2>🌐 Azure Networking</h2>
+            <p>Learn about Virtual Networks, Load Balancers, and other networking services.</p>
+
+            <div class="interactive-demo" id="networkingDemo">
+                <h3>Virtual Network Designer</h3>
+                <div class="vnet-builder">
+                    <div class="vnet-config">
+                        <div class="config-section">
+                            <h4>VNet Configuration</h4>
+                            <input type="text" id="vnetName" placeholder="VNet Name" value="MyVNet">
+                            <input type="text" id="vnetAddress" placeholder="Address Space" value="10.0.0.0/16">
+                            
+                            <h4>Subnets</h4>
+                            <div id="subnetList">
+                                <div class="subnet-config">
+                                    <input type="text" class="subnet-name" placeholder="Subnet Name" value="Frontend">
+                                    <input type="text" class="subnet-range" placeholder="Address Range" value="10.0.1.0/24">
+                                    <select class="subnet-type">
+                                        <option value="public">Public Subnet</option>
+                                        <option value="private">Private Subnet</option>
+                                    </select>
+                                    <button class="btn-small" onclick="removeSubnet(this)">Remove</button>
+                                </div>
+                            </div>
+                            <button class="btn" onclick="addSubnet()">Add Subnet</button>
+                        </div>
+
+                        <div class="network-components">
+                            <h4>Network Components</h4>
+                            <div class="component-options">
+                                <label>
+                                    <input type="checkbox" id="loadBalancer" onchange="updateNetworkDiagram()"> Load Balancer
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="appGateway" onchange="updateNetworkDiagram()"> Application Gateway
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="bastionHost" onchange="updateNetworkDiagram()"> Bastion Host
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="firewall" onchange="updateNetworkDiagram()"> Azure Firewall
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="network-diagram" id="networkDiagram">
+                        <div class="diagram-placeholder">Network diagram will appear here</div>
+                    </div>
+                </div>
+
+                <div class="security-rules">
+                    <h4>Network Security Rules</h4>
+                    <div class="rule-builder">
+                        <select id="ruleType">
+                            <option value="inbound">Inbound Rule</option>
+                            <option value="outbound">Outbound Rule</option>
+                        </select>
+                        <input type="text" id="rulePriority" placeholder="Priority (100-4096)" value="100">
+                        <input type="text" id="rulePort" placeholder="Port (80, 443, etc.)" value="80">
+                        <select id="ruleProtocol">
+                            <option value="TCP">TCP</option>
+                            <option value="UDP">UDP</option>
+                            <option value="Any">Any</option>
+                        </select>
+                        <button class="btn" onclick="addSecurityRule()">Add Rule</button>
+                    </div>
+                    <div id="rulesList" class="rules-list">
+                        <!-- Security rules will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge">
+                <h3>🔧 Network Security Challenge</h3>
+                <p>Create a secure network architecture with the following requirements:</p>
+                <ul>
+                    <li>Public subnet for web servers with a load balancer</li>
+                    <li>Private subnet for application servers</li>
+                    <li>Proper security rules for web traffic</li>
+                    <li>Bastion host for secure management</li>
+                </ul>
+                <button class="btn" onclick="validateNetworkChallenge()">Validate Solution</button>
+            </div>
+
+            <style>
+                .vnet-builder {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin: 20px 0;
+                }
+
+                .vnet-config {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+
+                .subnet-config {
+                    display: grid;
+                    grid-template-columns: 2fr 2fr 2fr 1fr;
+                    gap: 10px;
+                    margin: 10px 0;
+                    align-items: center;
+                }
+
+                .network-diagram {
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    min-height: 500px;
+                    position: relative;
+                }
+
+                .vnet-diagram {
+                    border: 2px solid #0078D4;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin: 10px;
+                    background: white;
+                    position: relative;
+                    min-height: 460px;
+                }
+
+                .network-component {
+                    background: white;
+                    border: 2px solid #0078D4;
+                    border-radius: 6px;
+                    padding: 10px;
+                    margin: 5px;
+                    text-align: center;
+                    position: absolute;
+                    width: 150px;
+                    z-index: 2;
+                }
+
+                .network-component.firewall {
+                    background: #FFE5E5;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+
+                .network-component.lb {
+                    background: #E5F2FF;
+                    top: 100px;
+                    left: 30%;
+                }
+
+                .network-component.ag {
+                    background: #E5F2FF;
+                    top: 100px;
+                    right: 30%;
+                }
+
+                .network-component.bastion {
+                    background: #FFF5E5;
+                    bottom: 20px;
+                    right: 20px;
+                }
+
+                .subnets-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: space-around;
+                    margin-top: 180px;
+                    position: relative;
+                    gap: 20px;
+                }
+
+                .subnet-box {
+                    width: 200px;
+                    min-height: 120px;
+                    border: 2px solid #0078D4;
+                    border-radius: 6px;
+                    padding: 15px;
+                    text-align: center;
+                    position: relative;
+                }
+
+                .subnet-box.public {
+                    background: #E5F2FF;
+                }
+
+                .subnet-box.private {
+                    background: #FFF5E5;
+                }
+
+                .subnet-title {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+
+                .subnet-details {
+                    font-size: 0.9em;
+                    color: #666;
+                }
+
+                .connection-line {
+                    position: absolute;
+                    background: #0078D4;
+                    z-index: 1;
+                }
+
+                .vertical-line {
+                    width: 2px;
+                }
+
+                .horizontal-line {
+                    height: 2px;
+                }
+
+                .security-rules {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-top: 20px;
+                }
+
+                .rule-builder {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                    gap: 10px;
+                    margin: 10px 0;
+                }
+
+                .rules-list {
+                    margin-top: 15px;
+                    max-height: 200px;
+                    overflow-y: auto;
+                }
+
+                .component-options {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+                    margin: 10px 0;
+                }
+
+                .component-icon {
+                    width: 24px;
+                    height: 24px;
+                    margin-bottom: 5px;
+                }
+
+                .legend-toggle {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: white;
+                    border: 1px solid #0078D4;
+                    border-radius: 4px;
+                    padding: 5px 10px;
+                    cursor: pointer;
+                    z-index: 3;
+                }
+
+                .legend-box {
+                    position: absolute;
+                    top: 50px;
+                    right: 10px;
+                    background: white;
+                    padding: 10px;
+                    border-radius: 4px;
+                    border: 1px solid #0078D4;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    z-index: 3;
+                    width: 200px;
+                }
+
+                .legend-item {
+                    display: flex;
+                    align-items: center;
+                    margin: 5px 0;
+                }
+
+                .legend-color {
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 10px;
+                    border: 1px solid #0078D4;
+                    border-radius: 3px;
+                }
+
+                .connection-arrow {
+                    position: absolute;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                }
+
+                .arrow-down {
+                    border-width: 8px 6px 0 6px;
+                    border-color: #0078D4 transparent transparent transparent;
+                }
+            </style>
+        </div>
+
+        <!-- Lesson 5: Security & Monitoring -->
+        <div class="lesson" data-lesson="5">
+            <h2>🔐 Security & Monitoring</h2>
+            <p>Explore Azure's security features and monitoring capabilities.</p>
+
+            <div class="security-dashboard">
+                <h3>Security Center</h3>
+                <div class="security-grid">
+                    <div class="security-card">
+                        <h4>Identity & Access</h4>
+                        <div class="security-items">
+                            <div class="security-item" onclick="configureSecurityOption('mfa')">
+                                <span class="status-icon">⚠️</span>
+                                Multi-Factor Authentication
+                            </div>
+                            <div class="security-item" onclick="configureSecurityOption('rbac')">
+                                <span class="status-icon">✅</span>
+                                Role-Based Access Control
+                            </div>
+                            <div class="security-item" onclick="configureSecurityOption('conditional')">
+                                <span class="status-icon">⚠️</span>
+                                Conditional Access
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="security-card">
+                        <h4>Network Security</h4>
+                        <div class="security-items">
+                            <div class="security-item" onclick="configureSecurityOption('firewall')">
+                                <span class="status-icon">✅</span>
+                                Azure Firewall
+                            </div>
+                            <div class="security-item" onclick="configureSecurityOption('ddos')">
+                                <span class="status-icon">⚠️</span>
+                                DDoS Protection
+                            </div>
+                            <div class="security-item" onclick="configureSecurityOption('waf')">
+                                <span class="status-icon">❌</span>
+                                Web Application Firewall
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="monitoring-dashboard">
+                    <h3>Resource Monitoring</h3>
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <h4>CPU Utilization</h4>
+                            <div class="metric-chart">
+                                <div class="chart-bar" style="height: 60%;">60%</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Memory Usage</h4>
+                            <div class="metric-chart">
+                                <div class="chart-bar" style="height: 75%;">75%</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Network Traffic</h4>
+                            <div class="metric-chart">
+                                <div class="chart-bar" style="height: 45%;">45%</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Storage IOPS</h4>
+                            <div class="metric-chart">
+                                <div class="chart-bar" style="height: 30%;">30%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alerts-panel">
+                        <h4>Recent Alerts</h4>
+                        <div class="alert-list" id="alertsList">
+                            <!-- Alerts will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .security-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 20px;
+                    margin: 20px 0;
+                }
+
+                .security-card {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+
+                .security-items {
+                    margin-top: 15px;
+                }
+
+                .security-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 10px;
+                    margin: 5px 0;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                }
+
+                .security-item:hover {
+                    background-color: #f0f0f0;
+                }
+
+                .status-icon {
+                    margin-right: 10px;
+                }
+
+                .metric-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 20px;
+                    margin: 20px 0;
+                }
+
+                .metric-card {
+                    background: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+
+                .metric-chart {
+                    height: 150px;
+                    background: #f5f5f5;
+                    border-radius: 4px;
+                    padding: 10px;
+                    display: flex;
+                    align-items: flex-end;
+                }
+
+                .chart-bar {
+                    width: 100%;
+                    background: linear-gradient(to top, #0078D4, #50E6FF);
+                    color: white;
+                    text-align: center;
+                    padding: 5px;
+                    border-radius: 4px;
+                    transition: height 1s ease;
+                }
+
+                .alerts-panel {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-top: 20px;
+                }
+
+                .alert-list {
+                    margin-top: 15px;
+                    max-height: 200px;
+                    overflow-y: auto;
+                }
+            </style>
+        </div>
+
+        <div class="navigation">
+            <button class="btn" id="prevBtn" onclick="previousLesson()" disabled>← Previous</button>
+            <button class="btn" id="nextBtn" onclick="nextLesson()">Next →</button>
+            <button class="btn" onclick="resetTutorial()">🔄 Reset Progress</button>
+        </div>
+    </div>
+
+    <script>
+        let currentLesson = 1;
+        const totalLessons = 5;
+
+        // Azure service information
+        const serviceInfo = {
+            'compute': 'Azure Compute services include Virtual Machines, App Services, and Kubernetes Service for running your applications.',
+            'storage': 'Azure Storage provides secure, scalable storage for files, disks, and objects with options like Blob, File, and Table storage.',
+            'networking': 'Azure Networking services enable you to connect cloud and on-premises infrastructure with VNets, Load Balancers, and more.',
+            'database': 'Azure Database services offer managed SQL, NoSQL, and other database options with built-in security and scalability.'
+        };
+
+        // VM pricing (simplified for demo)
+        const vmPricing = {
+            'windows': {
+                'small': 0.12,
+                'medium': 0.24,
+                'large': 0.48
+            },
+            'linux': {
+                'small': 0.06,
+                'medium': 0.12,
+                'large': 0.24
+            }
+        };
+
+        function updateProgress() {
+            const progress = (currentLesson / totalLessons) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showLesson(lessonNum) {
+            document.querySelectorAll('.lesson').forEach(lesson => {
+                lesson.classList.remove('active');
+            });
+            document.querySelector(`.lesson[data-lesson="${lessonNum}"]`).classList.add('active');
+            
+            currentLesson = lessonNum;
+            updateProgress();
+            updateNavigation();
+        }
+
+        function nextLesson() {
+            if (currentLesson < totalLessons) {
+                showLesson(currentLesson + 1);
+            }
+        }
+
+        function previousLesson() {
+            if (currentLesson > 1) {
+                showLesson(currentLesson - 1);
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentLesson === 1;
+            nextBtn.disabled = currentLesson === totalLessons;
+        }
+
+        function resetTutorial() {
+            showLesson(1);
+            // Reset any progress or state
+            updateVMCost();
+        }
+
+        function showServiceInfo(service) {
+            const infoDiv = document.getElementById('serviceInfo');
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = serviceInfo[service];
+
+            document.querySelectorAll('.azure-service').forEach(svc => {
+                svc.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function selectAnswer(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(option => {
+                option.classList.remove('correct', 'incorrect');
+                option.onclick = null;
+            });
+            
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+
+        function updateVMCost() {
+            const os = document.getElementById('vmOS').value;
+            const size = document.getElementById('vmSize').value;
+            const cost = vmPricing[os][size];
+            
+            document.getElementById('vmCost').innerHTML = `
+                <div class="metric-value">$${cost.toFixed(2)}</div>
+                <div>Estimated Cost/Hour</div>
+            `;
+        }
+
+        // Storage pricing (simplified)
+        const storagePricing = {
+            'blob': {
+                'hot': 0.0184,
+                'cool': 0.01,
+                'archive': 0.00099
+            },
+            'file': {
+                'transaction': 0.06,
+                'hot': 0.0325,
+                'premium': 0.12
+            },
+            'table': 0.05,
+            'queue': 0.05
+        };
+
+        function updateStorageCost() {
+            const blobTier = document.getElementById('blobTier').value;
+            const blobSize = parseFloat(document.getElementById('blobStorage').value) || 0;
+            const fileTier = document.getElementById('fileShareTier').value;
+            const fileSize = parseFloat(document.getElementById('fileStorage').value) || 0;
+            const tableSize = parseFloat(document.getElementById('tableStorage').value) || 0;
+            const queueSize = parseFloat(document.getElementById('queueStorage').value) || 0;
+
+            const totalCost = 
+                (blobSize * storagePricing.blob[blobTier]) +
+                (fileSize * storagePricing.file[fileTier]) +
+                (tableSize * storagePricing.table) +
+                (queueSize * storagePricing.queue);
+
+            document.getElementById('totalStorageCost').textContent = `$${totalCost.toFixed(2)}`;
+        }
+
+        const storageFeatures = {
+            'redundancy': `
+                <h4>Storage Redundancy Options</h4>
+                <ul>
+                    <li>Locally Redundant Storage (LRS)</li>
+                    <li>Zone-Redundant Storage (ZRS)</li>
+                    <li>Geo-Redundant Storage (GRS)</li>
+                    <li>Read-Access Geo-Redundant Storage (RA-GRS)</li>
+                </ul>
+            `,
+            'security': `
+                <h4>Security Features</h4>
+                <ul>
+                    <li>Azure Active Directory Integration</li>
+                    <li>Shared Access Signatures (SAS)</li>
+                    <li>Customer-Managed Keys</li>
+                    <li>Azure Defender for Storage</li>
+                </ul>
+            `,
+            'performance': `
+                <h4>Performance Tiers</h4>
+                <ul>
+                    <li>Premium: High-performance SSD storage</li>
+                    <li>Hot: Frequent access optimization</li>
+                    <li>Cool: Infrequent access, lower cost</li>
+                    <li>Archive: Lowest cost, long-term retention</li>
+                </ul>
+            `
+        };
+
+        function showFeatureInfo(feature) {
+            const infoDiv = document.getElementById('featureInfo');
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = storageFeatures[feature];
+        }
+
+        function simulateOperation(operation) {
+            const output = document.getElementById('simulatorOutput');
+            const operations = {
+                'upload': 'Uploading file to Blob Storage...\nGenerating SAS token...\nFile uploaded successfully! URL: https://mystorageaccount.blob.core.windows.net/container/file.txt',
+                'download': 'Checking access permissions...\nDownloading file from Blob Storage...\nFile downloaded successfully!',
+                'delete': 'Verifying delete permissions...\nDeleting file...\nFile deleted successfully!'
+            };
+            output.textContent = operations[operation];
+        }
+
+        // Network functions
+        function addSubnet() {
+            const subnet = document.createElement('div');
+            subnet.className = 'subnet-config';
+            subnet.innerHTML = `
+                <input type="text" class="subnet-name" placeholder="Subnet Name" value="Subnet${document.querySelectorAll('.subnet-config').length + 1}">
+                <input type="text" class="subnet-range" placeholder="Address Range" value="10.0.${document.querySelectorAll('.subnet-config').length + 1}.0/24">
+                <select class="subnet-type">
+                    <option value="public">Public Subnet</option>
+                    <option value="private">Private Subnet</option>
+                </select>
+                <button class="btn-small" onclick="removeSubnet(this)">Remove</button>
+            `;
+            document.getElementById('subnetList').appendChild(subnet);
+            updateNetworkDiagram();
+        }
+
+        function removeSubnet(button) {
+            button.parentElement.remove();
+            updateNetworkDiagram();
+        }
+
+        function updateNetworkDiagram() {
+            const diagram = document.getElementById('networkDiagram');
+            const subnets = document.querySelectorAll('.subnet-config');
+            const hasLB = document.getElementById('loadBalancer').checked;
+            const hasAG = document.getElementById('appGateway').checked;
+            const hasBastion = document.getElementById('bastionHost').checked;
+            const hasFirewall = document.getElementById('firewall').checked;
+
+            let html = `<div class="vnet-diagram">`;
+            
+            // Add VNet label
+            html += `
+                <div style="position: absolute; top: -15px; left: 20px; background: white; padding: 5px;">
+                    ${document.getElementById('vnetName').value} (${document.getElementById('vnetAddress').value})
+                </div>
+            `;
+            
+            // Add Internet symbol at the top
+            html += `
+                <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); text-align: center;">
+                    🌐<br>Internet
+                </div>
+            `;
+
+            if (hasFirewall) {
+                html += `
+                    <div class="network-component firewall">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0Q4MzIzMiIgZD0iTTEyIDJMMyA1djZjMCA1LjUgMy44NCAxMC43NCA5IDEyIDUuMTYtMS4yNiA5LTYuNSA5LTEyVjVMMTIgMnptMCAxMWMtMS4xIDAtMi0uOS0yLTJzLjktMiAyLTIgMiAuOSAyIDItLjkgMi0yIDJ6Ii8+PC9zdmc+" class="component-icon">
+                        <div>Azure Firewall</div>
+                    </div>
+                    <div class="connection-line vertical-line" style="top: 60px; left: 50%; height: 40px;"></div>
+                    <div class="arrow-down" style="top: 100px; left: calc(50% - 6px);"></div>
+                `;
+            }
+
+            if (hasLB) {
+                html += `
+                    <div class="network-component lb">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwNzhENCIgZD0iTTIwIDhoLTNWNGgtMnY0SDlWNEg3djRINEMyLjkgOCAyIDguOSAyIDEwdjEwYzAgMS4xLjkgMiAyIDJoMTZjMS4xIDAgMi0uOSAyLTJWMTBjMC0xLjEtLjktMi0yLTJ6Ii8+PC9zdmc+" class="component-icon">
+                        <div>Load Balancer</div>
+                    </div>
+                    <div class="connection-line vertical-line" style="top: 140px; left: 35%; height: 40px;"></div>
+                    <div class="arrow-down" style="top: 180px; left: calc(35% - 6px);"></div>
+                `;
+            }
+
+            if (hasAG) {
+                html += `
+                    <div class="network-component ag">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwNzhENCIgZD0iTTIwIDZoLTRWNGMwLTEuMS0uOS0yLTItMmgtNGMtMS4xIDAtMiAuOS0yIDJ2Mkg0Yy0xLjEgMC0yIC45LTIgMnYxMmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjhjMC0xLjEtLjktMi0yLTJ6bS04IDJoLTR2LTJINFY2aDR2MmgyVjZoNHYyaDJ2MmgtMnoiLz48L3N2Zz4=" class="component-icon">
+                        <div>Application Gateway</div>
+                    </div>
+                    <div class="connection-line vertical-line" style="top: 140px; right: 35%; height: 40px;"></div>
+                    <div class="arrow-down" style="top: 180px; right: calc(35% - 6px);"></div>
+                `;
+            }
+
+            html += `<div class="subnets-container">`;
+            subnets.forEach((subnet, index) => {
+                const name = subnet.querySelector('.subnet-name').value;
+                const range = subnet.querySelector('.subnet-range').value;
+                const type = subnet.querySelector('.subnet-type').value;
+                
+                html += `
+                    <div class="subnet-box ${type}">
+                        <div class="subnet-title">${name}</div>
+                        <div class="subnet-details">${range}</div>
+                        ${type === 'public' ? '<div style="margin-top: 10px;">🌐 Public Access</div>' : '<div style="margin-top: 10px;">🔒 Private Access</div>'}
+                        <div style="margin-top: 5px; font-size: 0.8em;">NSG Rules Applied</div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+
+            if (hasBastion) {
+                html += `
+                    <div class="network-component bastion">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGQTUwMCIgZD0iTTEyIDFMMyA1djZjMCA1LjUgMy44NCAxMC43NCA5IDEyIDUuMTYtMS4yNiA5LTYuNSA5LTEyVjVMMTIgMXptMCA0YzEuNCAwIDIuNSAxLjEgMi41IDIuNVMxMy40IDEwIDEyIDEwcy0yLjUtMS4xLTIuNS0yLjVTMTAuNiA1IDEyIDV6Ii8+PC9zdmc+" class="component-icon">
+                        <div>Bastion Host</div>
+                    </div>
+                `;
+            }
+
+            // Add legend toggle button and legend
+            html += `
+                <button id="legendToggle" class="legend-toggle" onclick="toggleLegend()">
+                    📋 Show/Hide Legend
+                </button>
+                <div id="legendBox" class="legend-box" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong>Legend</strong>
+                        <span style="cursor: pointer;" onclick="toggleLegend()">✖</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #E5F2FF;"></div>
+                        Public Subnet
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #FFF5E5;"></div>
+                        Private Subnet
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #FFE5E5;"></div>
+                        Firewall
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #E5F2FF;"></div>
+                        Load Balancer/App Gateway
+                    </div>
+                </div>
+            `;
+
+            html += `</div>`;
+            diagram.innerHTML = html;
+        }
+
+        function addSecurityRule() {
+            const type = document.getElementById('ruleType').value;
+            const priority = document.getElementById('rulePriority').value;
+            const port = document.getElementById('rulePort').value;
+            const protocol = document.getElementById('ruleProtocol').value;
+
+            const rule = document.createElement('div');
+            rule.className = 'security-rule';
+            rule.innerHTML = `
+                <div class="rule-item">
+                    ${type.toUpperCase()} | Priority: ${priority} | Port: ${port} | ${protocol}
+                    <button class="btn-small" onclick="this.parentElement.remove()">Remove</button>
+                </div>
+            `;
+            document.getElementById('rulesList').appendChild(rule);
+        }
+
+        function validateNetworkChallenge() {
+            const subnets = document.querySelectorAll('.subnet-config');
+            const hasLB = document.getElementById('loadBalancer').checked;
+            const hasBastion = document.getElementById('bastionHost').checked;
+            let hasPublic = false;
+            let hasPrivate = false;
+
+            subnets.forEach(subnet => {
+                const type = subnet.querySelector('.subnet-type').value;
+                if (type === 'public') hasPublic = true;
+                if (type === 'private') hasPrivate = true;
+            });
+
+            if (hasPublic && hasPrivate && hasLB && hasBastion) {
+                alert('Congratulations! Your network design meets the security requirements! 🎉');
+            } else {
+                alert('Your solution doesn\'t meet all requirements yet. Keep trying! 💪');
+            }
+        }
+
+        // Security & Monitoring functions
+        function configureSecurityOption(option) {
+            const configurations = {
+                'mfa': 'Configuring Multi-Factor Authentication...',
+                'rbac': 'Managing Role-Based Access Control...',
+                'conditional': 'Setting up Conditional Access Policies...',
+                'firewall': 'Configuring Azure Firewall Rules...',
+                'ddos': 'Enabling DDoS Protection...',
+                'waf': 'Setting up Web Application Firewall...'
+            };
+
+            alert(configurations[option]);
+            // In a real application, this would open a configuration panel
+        }
+
+        // Toggle legend visibility
+        function toggleLegend() {
+            const legendBox = document.getElementById('legendBox');
+            legendBox.style.display = legendBox.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            updateNavigation();
+            updateVMCost();
+            updateStorageCost();
+            updateNetworkDiagram();
+
+            // Initialize alerts
+            const alertsList = document.getElementById('alertsList');
+            const sampleAlerts = [
+                { severity: 'High', message: 'Unusual sign-in activity detected' },
+                { severity: 'Medium', message: 'CPU utilization above 80%' },
+                { severity: 'Low', message: 'Storage account nearing capacity' }
+            ];
+
+            alertsList.innerHTML = sampleAlerts.map(alert => `
+                <div class="alert-item ${alert.severity.toLowerCase()}">
+                    <span class="alert-severity">${alert.severity}</span>
+                    ${alert.message}
+                </div>
+            `).join('');
+        });
+    </script>
+</body>
+</html>
